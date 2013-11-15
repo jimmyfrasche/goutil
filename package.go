@@ -21,6 +21,7 @@ type Package struct {
 	Context *build.Context
 	Build   *build.Package
 	AST     *ast.Package
+	FileSet *token.FileSet //The FileSet AST was parsed with.
 	Doc     *doc.Package
 	//filename → tag
 	tags map[string]tag
@@ -79,7 +80,7 @@ func (p *Package) ASTFilesMatching(tags ...string) (files []*ast.File) {
 	return
 }
 
-func (p *Package) parse(pc bool) (*ast.Package, error) {
+func (p *Package) parse(pc bool) (*ast.Package, *token.FileSet, error) {
 	f := func(fi os.FileInfo) bool {
 		if fi.IsDir() {
 			return false
@@ -98,18 +99,19 @@ func (p *Package) parse(pc bool) (*ast.Package, error) {
 		m = parser.ParseComments
 	}
 
-	pkgs, err := parser.ParseDir(token.NewFileSet(), p.Build.Dir, f, m)
+	fs := token.NewFileSet()
+	pkgs, err := parser.ParseDir(fs, p.Build.Dir, f, m)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	pkg, ok := pkgs[p.Build.Name]
 	if !ok {
 		//I do not even know how this could happen but may as well handle it
 		//in case any assumptions shift from under our feet.
-		return nil, fmt.Errorf("No package named %s", p.Build.Name)
+		return nil, nil, fmt.Errorf("No package named %s", p.Build.Name)
 	}
-	return pkg, nil
+	return pkg, fs, nil
 }
 
 //Parse the package and set p.AST.
@@ -121,12 +123,13 @@ func (p *Package) Parse(parseComments bool) error {
 		return nil
 	}
 
-	pkg, err := p.parse(parseComments)
+	pkg, fs, err := p.parse(parseComments)
 	if err != nil {
 		return err
 	}
 
 	p.AST = pkg
+	p.FileSet = fs
 	return nil
 }
 
@@ -147,7 +150,7 @@ func (p *Package) ParseDocs(mode doc.Mode) error {
 	if p.Doc != nil {
 		return nil
 	}
-	pkg, err := p.parse(true)
+	pkg, _, err := p.parse(true)
 	if err != nil {
 		return err
 	}

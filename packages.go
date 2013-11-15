@@ -76,3 +76,16 @@ func (ps Packages) HasFilesMatching(tags ...string) Packages {
 		return len(p.FilesMatching(tags...)) > 0
 	})
 }
+
+//Uniq takes a list of Packages and filters out duplicates ONLY by import path.
+func (ps Packages) Uniq() (out Packages) {
+	seen := map[string]bool{}
+	for _, p := range ps {
+		imp := p.Build.ImportPath
+		if !seen[imp] {
+			seen[imp] = true
+			out = append(out, p)
+		}
+	}
+	return
+}
