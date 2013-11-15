@@ -89,3 +89,17 @@ func (ps Packages) Uniq() (out Packages) {
 	}
 	return
 }
+
+//Imports return the set of imports in the packages, in no particular order.
+func (ps Packages) Imports() (out []string) {
+	seen := map[string]bool{}
+	for _, p := range ps {
+		for _, i := range p.Build.Imports {
+			if !seen[i] {
+				seen[i] = true
+				out = append(out, i)
+			}
+		}
+	}
+	return
+}
