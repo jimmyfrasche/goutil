@@ -65,10 +65,9 @@ func fmtast(fs *token.FileSet, v interface{}) string {
 }
 
 func fmtpos(pkg *goutil.Package, pos token.Pos) string {
-	s := ""
 	p := pkg.FileSet.Position(pos)
 	_, f := filepath.Split(p.Filename)
-	return s + fmt.Sprintf("%s:%d:", f, p.Line)
+	return fmt.Sprintf("%s:%d:", f, p.Line)
 }
 
 //print just types, caller handles ()
