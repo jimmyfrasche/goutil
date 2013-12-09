@@ -166,7 +166,7 @@ func Install(name, location string, file []byte, tags ...string) error {
 			return err
 		}
 
-		t.Args = append(t.Args, "install")
+		t.Args = append(t.Args, "build")
 		t.Args = append(t.Args, tagargs(tags)...)
 		t.Args = append(t.Args, "-o", name, "main.go")
 
