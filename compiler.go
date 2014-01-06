@@ -30,7 +30,7 @@ func NewGostrap() (*Gostrap, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = os.MkdirAll(filepath.Join(t, "src", "src"), 0777); err != nil {
+	if err = os.MkdirAll(filepath.Join(t, "src"), 0777); err != nil {
 		os.RemoveAll(t)
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (t *Gostrap) Popdir() error {
 
 //JoinPath joins path to the temp directory.
 func (t *Gostrap) JoinPath(path ...string) string {
-	return filepath.Join(t.root, "src", "src", filepath.Join(path...))
+	return filepath.Join(t.root, "src", filepath.Join(path...))
 }
 
 //AddFile creates a file in the temp location.
