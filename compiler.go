@@ -23,6 +23,11 @@ type Gostrap struct {
 //arguments appended to its Args list. It defaults to using os.Stdout
 //and os.Stderr for the Stdout and Stderr of the Cmd, respectively.
 //
+//Note that the go command will not rebuild out of date packages from
+//other workspaces, and that Gostrap executes in its own workspace, so
+//you may have to include the -a flag to force rebuilding of all dependent
+//packages.
+//
 //You should investigate Run and Install first, as they are likely what you
 //need, and if not their source, and WithGostrap's, show how Gostrap is used.
 func NewGostrap() (*Gostrap, error) {
@@ -142,7 +147,7 @@ func Run(file []byte, tags ...string) error {
 			return err
 		}
 
-		t.Args = append(t.Args, "run")
+		t.Args = append(t.Args, "run", "-a")
 		t.Args = append(t.Args, tagargs(tags)...)
 		t.Args = append(t.Args, "main.go")
 
@@ -166,7 +171,7 @@ func Install(name, location string, file []byte, tags ...string) error {
 			return err
 		}
 
-		t.Args = append(t.Args, "build")
+		t.Args = append(t.Args, "build", "-a")
 		t.Args = append(t.Args, tagargs(tags)...)
 		t.Args = append(t.Args, "-o", name, "main.go")
 
