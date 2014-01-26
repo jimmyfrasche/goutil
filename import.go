@@ -152,7 +152,7 @@ func importdir(ctx *build.Context, root string, acc *Packages, first *error) {
 //
 //It uses the same build.Context this Package was built with.
 func (p *Package) ImportDeps() (pkgs Packages, err error) {
-	seen := map[string]bool{p.Build.ImportPath: true}
+	seen := map[string]bool{p.Build.ImportPath: true, "C": true}
 	acc := Packages{p}
 	defer func() {
 		if x := recover(); x != nil {
