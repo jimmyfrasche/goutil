@@ -29,7 +29,9 @@ func imports(ctx *build.Context, ip string) (pkgs goutil.Packages, err error) {
 //If you only care about the first error, wrap the call in FirstError.
 func Import(notree bool, ctx *build.Context, args []string) (pkgs []goutil.Packages, errs []error) {
 	push := func(ps goutil.Packages, err error) {
-		pkgs = append(pkgs, ps)
+		if len(ps) > 0 {
+			pkgs = append(pkgs, ps)
+		}
 		if err != nil {
 			errs = append(errs, err)
 		}
